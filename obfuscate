@@ -1,0 +1,62 @@
+# Internal filename: <string>
+# Bytecode version: 3.9.0beta5 (46)
+# Source timestamp: 2025-11-22 19:16:18 UTC (1630640118)
+# By Begius4xxxxxXXXXXXXXX
+
+
+import marshal
+import zlib
+import base64
+
+
+def obfuscate_script(src_file: str, output_file: str):
+
+    with open(src_file, 'r') as file:
+        source_code = file.read()
+
+    compiled_code = compile(source_code, '<string>', 'exec')
+    marshalled_code = marshal.dumps(compiled_code)
+    compressed_code = zlib.compress(marshalled_code)
+    encoded_code = base64.b64encode(compressed_code).decode('utf-8')
+
+    header = """# ==================================================
+#
+#                 [ Script Information ]
+#
+#  Name      : 
+#  Author    : 
+#
+#  License   : This tool is strictly for personal use.  
+#              Redistribution, resale, or sharing  
+#              without permission is prohibited.
+#
+#  Notice    : The source code is private and  
+#              cannot be accessed, modified,  
+#              or shared.
+#
+#  Support   : For help or inquiries, contact:  
+#                 GitHub  : https://github.com/
+#                 Discord : https://discord.gg/
+#
+# =================================================="""
+
+    loader_code = """import base64, marshal, zlib
+
+exec(marshal.loads(zlib.decompress(base64.b64decode(b'"""
+
+    footer_code = "'))))"
+
+    obfuscated_code = f"{header}\n{loader_code}{encoded_code}{footer_code}"
+    
+    with open(output_file, "w") as output:
+        output.write(obfuscated_code)
+
+
+def main():
+    source_file = "main.py"
+    output_filename = "main2.py"
+    obfuscate_script(source_file, output_filename)
+
+
+if __name__ == "__main__":
+    main()
